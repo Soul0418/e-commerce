@@ -11,8 +11,7 @@ A full-stack e-commerce application built with Node.js, Express, MongoDB, and a 
   - [Running the App](#running-the-app)  
 - [Project Structure](#project-structure)  
 - [Usage](#usage)  
-- [Contributing](#contributing)  
-- [License](#license)  
+- [Contributing](#contributing)
 - [Contact](#contact)  
 
 ## Project Overview  
