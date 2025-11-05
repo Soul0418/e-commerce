@@ -1,0 +1,51 @@
+<!doctype html>
+<html><head>
+  <meta charset="utf-8" /><title>Product</title><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="/styles.css">
+</head><body>
+  <header class="header">
+    <h1><a href="/">My Shop</a></h1>
+    <nav><a href="/cart.html" id="cart-link">Cart (0)</a></nav>
+  </header>
+
+  <main class="container">
+    <div id="product"></div>
+  </main>
+
+  <script src="/app.js"></script>
+  <script>
+    async function loadProduct(){
+      const params = new URLSearchParams(location.search);
+      const id = params.get('id');
+      if (!id) return document.getElementById('product').innerText = 'No product specified.';
+      const res = await fetch('/api/products/' + id);
+      if (!res.ok) return document.getElementById('product').innerText = 'Product not found.';
+      const p = await res.json();
+      document.getElementById('product').innerHTML = `
+        <div class="card" style="display:flex; gap:14px; flex-direction:column;">
+          <img src="${p.image || 'https://via.placeholder.com/400x300'}" style="max-height:420px;">
+          <h2>${p.title}</h2>
+          <div class="price">₹${p.price.toFixed(2)}</div>
+          <p>${p.description || ''}</p>
+          <div style="display:flex; gap:8px;">
+            <input id="qty" type="number" value="1" min="1" style="width:80px;">
+            <button id="add" class="btn">Add to cart</button>
+            <a class="btn" href="/">Back</a>
+          </div>
+        </div>
+      `;
+      document.getElementById('add').addEventListener('click', async ()=>{
+        const qty = Number(document.getElementById('qty').value) || 1;
+        // require login: show prompt to login/register or handle guest flow
+        const token = localStorage.getItem('token');
+        if (!token) return alert('Please login to add to cart (use /auth on the UI).');
+        const r = await fetch('/api/cart', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ productId: p._id, qty })
+        });
+        if (r.ok) { alert('Added to cart'); updateCartCount(); } else { alert('Error'); }
+      });
+    }
+    loadProduct();
+  </script>
+</body></html>
